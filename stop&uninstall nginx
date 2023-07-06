@@ -1,0 +1,97 @@
+ansible task-3
+===============================
+uninstall nginx
+=========================================================================================
+
+ 
+        step1: no need to create playbook , as we have already a playbook
+        
+        step2: no need to create hosts file , as we have already a host file
+        
+        step3: create another role inside roles directory.
+               commands: 
+                           cd roles
+                           ansible-galaxy init uninstall-nginx
+                           
+        step4: create another master.yml file, name it uninstall-nginx.yml
+               command: 
+                           touch nginx-uninstall.yml
+
+        step5: vi nginx-uninstall.yml
+                  
+---
+- hosts: targets
+  become: true
+  gather_facts: yes
+  roles:
+    - stop-nginx  
+    
+     
+                  
+        step6: go to main.yml of role3
+        
+              vi main.yml   
+              ---
+              - name: Stop nginx
+                service:
+                  name: nginx
+                  state: stopped
+              - name: Uninstall nginx
+                apt:
+                  update_cache: yes
+                  name: nginx
+                  state: absent   
+                  autoremove: yes      
+  
+  
+  
+  
+Q.} how to confirm that nginx uninstalled in ubuntu
+
+A.} Go to /etc/share folder
+    do ls
+    if there will be no "nginx" directory then it is 10000% chances that nginx has uninstalled.
+
+   
+  
+  
+  
+  
+Using when condition :  
+===============================================================================================================================================  
+  
+                             
+---
+#stop nginx from ubuntu
+
+- name: stop Nginx
+  service:
+    name: nginx
+    state: stopped
+  when: ansible_os_family == "Debian"
+
+#stop httpd from centos
+
+- name: stop httpd
+  service: 
+    name: httpd
+    state: stopped
+  when: ansible_os_family == "RedHat"
+
+#uninstall nginx from ubuntu
+  
+- name: Uninstall Httpd
+  yum:
+    name: httpd
+    state: absent
+    autoremove: yes
+  when: ansible_os_family == "RedHat"    
+
+- name: Uninstall Nginx
+  apt:
+    update_cache: yes     
+    name: nginx
+    state: absent
+    autoremove: yes
+  when: ansible_os_family == "Debian"
+

@@ -1,0 +1,130 @@
+///// ansible tasks-2
+===============================
+///// install nginx and start nginx
+=================================================================================
+        
+        step1: no need to create playbook , as we have already a playbook
+        
+        step2: no need to create hosts file , as we have already a host file
+        
+        step3: " create another role inside roles directory. "
+              
+                commands: 
+                           cd roles
+                           ansible-galaxy init install-nginx
+           
+                           
+        step4: " create another master.yml file, name it install-nginx.yml "
+               
+               command: 
+                           touch install-nginx.yml
+                           
+        step5: " configure the install-nginx.yml file "
+        
+              vi install-nginx.yml
+                  
+              ---
+              - hosts: targets
+                become: true
+                roles: 
+                  - install-nginx        
+                  
+        step6: " go to main.yml of install-nginx "
+        
+                   vi main.yml
+                   ---
+                   - name: update apt cache
+                     apt:
+                       update_cache: yes
+                   - name: Install nginx
+                     apt:
+                       name: nginx
+                       state: present
+                   - name: Start nginx
+                     service:
+                       name: nginx
+                       state: started    
+
+                                                              
+===================================================================================================================================================
+
+Using When Condition
+
+
+===================================================================================================================================================
+
+---
+#Install nginx in ubuntu
+
+- name: update apt cache
+  apt:
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+
+- name: install nginx in debian machine
+  apt:
+    name: nginx
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: install httpd in centos7 machine
+  yum:
+    name: httpd
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Show result
+  debug:
+    msg: "nginx installed in ubuntu"
+  when: ansible_os_family == "Debian"
+
+- name: Show result
+  debug:
+    msg: "httpd installed in Centos"
+  when: ansible_os_family == "RedHat"
+
+
+#Start nginx in ubuntu
+
+- name: Start nginx
+  service:
+    name: nginx
+    state: started
+  when: ansible_os_family == "Debian"
+
+#start httpd in centos
+
+- name: Satrt httpd
+  service:
+    name: httpd
+    state: started
+  when: ansible_os_family == "RedHat"
+
+
+#Confirmation message 
+
+- name: Confirmation message
+  debug:
+    msg: "Nginx started bro"
+  when: ansible_os_family == "Debian"
+
+- name: Confirmation mesage
+  debug:
+    msg: "Httpd started yooo"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                              
+                                                              
